@@ -1,6 +1,6 @@
 ---
 title: "Gov 50 Final Project"
-author: "Your Name Here"
+author: Gregor Kossmann
 description: "My final project"
 output:
   distill::distill_article:
@@ -11,4 +11,4 @@ output:
 
 ## Project thoughts
 
-I am interested in exploring data related to...
+For my Gov 50 final project I am interested in exploring the effect that the Marshall Plan has had on European Recovery following the second world war. I am generally very interested in the impact of US foreign aid on recipient countries (whether that be political, economic, or diplomatic), and the Marshall Plan is one of the biggest examples of such aid (with hopefully the most data). I think economic factors might have the most data, so I will look at GDP levels, spending levels, and other more precise metrics that may inform a relationship (in addition to various other diplomatic and political interactions that might be telling). Following that, I suppose I will have to conduct a straightforward regression analysis (although I do not know yet how to do that in R), between foreign aid and economic outcomes. 
