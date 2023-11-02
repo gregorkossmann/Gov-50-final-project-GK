@@ -115,7 +115,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"character","attributes":{},"value":["index_files/anchor-4.2.2/anchor.min.js","index_files/bowser-1.9.3/bowser.min.js","index_files/distill-2.2.21/template.v2.js","index_files/header-attrs-2.17/header-attrs.js","index_files/header-attrs-2.24/header-attrs.js","index_files/jquery-3.6.0/jquery-3.6.0.js","index_files/jquery-3.6.0/jquery-3.6.0.min.js","index_files/jquery-3.6.0/jquery-3.6.0.min.map","index_files/popper-2.6.0/popper.min.js","index_files/tippy-6.2.7/tippy-bundle.umd.min.js","index_files/tippy-6.2.7/tippy-light-border.css","index_files/tippy-6.2.7/tippy.css","index_files/tippy-6.2.7/tippy.umd.min.js","index_files/webcomponents-2.0.0/webcomponents.js"]}
+  {"type":"character","attributes":{},"value":["index_files/anchor-4.2.2/anchor.min.js","index_files/bowser-1.9.3/bowser.min.js","index_files/distill-2.2.21/template.v2.js","index_files/figure-html5/unnamed-chunk-2-1.png","index_files/header-attrs-2.17/header-attrs.js","index_files/header-attrs-2.24/header-attrs.js","index_files/jquery-3.6.0/jquery-3.6.0.js","index_files/jquery-3.6.0/jquery-3.6.0.min.js","index_files/jquery-3.6.0/jquery-3.6.0.min.map","index_files/popper-2.6.0/popper.min.js","index_files/tippy-6.2.7/tippy-bundle.umd.min.js","index_files/tippy-6.2.7/tippy-light-border.css","index_files/tippy-6.2.7/tippy.css","index_files/tippy-6.2.7/tippy.umd.min.js","index_files/webcomponents-2.0.0/webcomponents.js"]}
   </script>
   <!--radix_placeholder_navigation_in_header-->
   <!--/radix_placeholder_navigation_in_header-->
@@ -1521,7 +1521,51 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <p>For my Gov 50 final project I am interested in exploring the effect that the Marshall Plan has had on European Recovery following the second world war. I am generally very interested in the impact of US foreign aid on recipient countries (whether that be political, economic, or diplomatic), and the Marshall Plan is one of the biggest examples of such aid (with hopefully the most data). I think economic factors might have the most data, so I will look at GDP levels, spending levels, and other more precise metrics that may inform a relationship (in addition to various other diplomatic and political interactions that might be telling). Following that, I suppose I will have to conduct a straightforward regression analysis (although I do not know yet how to do that in R), between foreign aid and economic outcomes.</p>
 <h2 id="proposal-milestone-2">Proposal (Milestone 2)</h2>
 <p>My interest in the Marshall plan has narrowed down more specifically to investigating the economic impact of the Marshall Plan on Europe, which I will attempt to do by analyzing a variety of economic measures found on Statista and CESSDA. Although not finalized, my research question will center around the study of various economic indicators (industrial production, agricultural production, distribution of aid and loans, and GDP growth) as they relate to the Marshall Plan, questioning to what extent did the plan improve Europe’s economic outlook and truly serve as a model for reconstruction and development. Standard economic theory would suggest that given the massive influx of aid and capital that entered an already barren and deprived landscape in Europe, the Marshall Plan provided much needed stimulus to reinvigorate the economy, and the patterns in the data would confirm this upward trajectory of income (GDP) and production. If, however, the patterns in the data show that the early years following the implementation of the Marshall Plan saw relatively meager growth, it is more likely that economic improvements in future decades (60’s, 70’s), were more the result of factors other than the Marshall Plan. I will quantify the Marshall Plan through exact figures on foreign aid disbursements and loans given out between 1948-1952, with my outcome variables consisting of various economic indicators that combined can paint the overall macroeconomic standing of these European countries following the introduction of the Marshall Plan. Specifically, the datasets I have found include, among others, the OECD Employment and Labor Market Statistics from 1950 onwards, Post-WWII industrial (and agricultural) production in Western European countries between 1947 and 1951, and average annual GDP growth in European countries during the cold war (1950-1959).</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<h2 id="first-visualization-milestone-3">First Visualization (Milestone 3)</h2>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://readxl.tidyverse.org'>readxl</a></span><span class='op'>)</span></span>
+<span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dplyr.tidyverse.org'>dplyr</a></span><span class='op'>)</span></span>
+<span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://tidyverse.tidyverse.org'>tidyverse</a></span><span class='op'>)</span></span>
+<span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://ggplot2.tidyverse.org'>ggplot2</a></span><span class='op'>)</span></span>
+<span><span class='va'>ZA8155_16</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://readxl.tidyverse.org/reference/read_excel.html'>read_excel</a></span><span class='op'>(</span><span class='st'>"~/Desktop/Gov50Data/ZA8155_16.xls"</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>real_inc</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/numeric.html'>as.numeric</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/character.html'>as.character</a></span><span class='op'>(</span><span class='va'>ZA8155_16</span><span class='op'>[[</span><span class='st'>"...3"</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>real_inc</span></span></code></pre>
+</div>
+<pre><code>  [1]  1913  1891  2011  2082  2213  2198  2159  2120  2194  2117
+ [11]  2078  2114  2134  2237  2274  2314  2310  2377  2447  2488
+ [21]  2539  2508  2585  2686  2721  2814  2872  2909  2987  3049
+ [31]  3134  3016  3040  3162  3242  3265  3317  3416  3427  3449
+ [41]  3527  3602  3715  3833  3227  3038  3098  3118  3151  2763
+ [51]  2986  3288  3558  2937  3417  3772  3592  4235  4308  4335
+ [61]  4049  3618  3267  3591  3846  4165  4571  4809  5126  5549
+ [71]  5545  5862  5892  6046  6249  4326  2503  2763  3187  3642
+ [81]  4281  4651  5046  5438  5797  6431  6839  7154  7377  7867
+ [91]  8463  8729  9023  9184  9697 10104 10299 10243 10772 11465
+[101] 11933 12161 12603 13152 13171 13034 13797 14219 14664 15257
+[111] 15370 15355 15233 15545 16047 16412 16786 17032 17559 18015
+[121] 18685 19339 19351    NA    NA    NA</code></pre>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>german_inc</span> <span class='op'>&lt;-</span> <span class='va'>ZA8155_16</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/summarise.html'>summarize</a></span><span class='op'>(</span><span class='va'>`Reales Pro-Kopf-Einkommen in Europa und den USA (1870-1992)`</span>, <span class='va'>real_inc</span><span class='op'>)</span><span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/slice.html'>slice</a></span><span class='op'>(</span><span class='op'>-</span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>75</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/slice.html'>slice_head</a></span><span class='op'>(</span>n <span class='op'>=</span> <span class='op'>-</span><span class='fl'>35</span><span class='op'>)</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>`Reales Pro-Kopf-Einkommen in Europa und den USA (1870-1992)`</span>, y <span class='op'>=</span> <span class='va'>real_inc</span>, fill <span class='op'>=</span> <span class='va'>real_inc</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_bar.html'>geom_bar</a></span><span class='op'>(</span>stat <span class='op'>=</span> <span class='st'>"identity"</span>, fill <span class='op'>=</span> <span class='st'>"dodgerblue"</span><span class='op'>)</span> <span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='st'>"Years"</span>, y <span class='op'>=</span> <span class='st'>"Income Per Capita in Germany (in mil. USD)"</span><span class='op'>)</span> <span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_continuous.html'>scale_y_continuous</a></span><span class='op'>(</span>limits <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>9000</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_abline.html'>geom_vline</a></span><span class='op'>(</span>xintercept <span class='op'>=</span> <span class='st'>"1948"</span>, color <span class='op'>=</span> <span class='st'>"indianred"</span>, linetype <span class='op'>=</span> <span class='st'>"dashed"</span><span class='op'>)</span> <span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_abline.html'>geom_vline</a></span><span class='op'>(</span>xintercept <span class='op'>=</span> <span class='st'>"1952"</span>, color <span class='op'>=</span> <span class='st'>"indianred"</span>, linetype <span class='op'>=</span> <span class='st'>"dashed"</span><span class='op'>)</span> </span>
+<span>  </span>
+<span><span class='va'>german_inc</span> </span></code></pre>
+</div>
+<p><img src="index_files/figure-html5/unnamed-chunk-2-1.png" width="624" /></p>
+</div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
