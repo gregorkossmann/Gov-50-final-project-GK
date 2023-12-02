@@ -6,31 +6,26 @@ output:
   distill::distill_article:
     self_contained: false
 ---
+## Introduction
+    * brief intro 
+    * your research question, I'm assessing the impact of the Marshall Plan on Europe's economy do determine how effective foreign aid is
+    * how you collect your data, where your data is coming from, and brief roadmap of what you will do
+    * also include hypothesis (and null hypothesis)
+    * ultimately your argument that aid works best when its targeted and much of the aid from the Marshall Plan actually wasn't the most effective
 
-
-
-## Project thoughts (Milestone 1)
-
-For my Gov 50 final project I am interested in exploring the effect that the Marshall Plan has had on European Recovery following the second world war. I am generally very interested in the impact of US foreign aid on recipient countries (whether that be political, economic, or diplomatic), and the Marshall Plan is one of the biggest examples of such aid (with hopefully the most data). I think economic factors might have the most data, so I will look at GDP levels, spending levels, and other more precise metrics that may inform a relationship (in addition to various other diplomatic and political interactions that might be telling). Following that, I suppose I will have to conduct a straightforward regression analysis (although I do not know yet how to do that in R), between foreign aid and economic outcomes. 
-
-## Proposal (Milestone 2)
-
-My interest in the Marshall plan has narrowed down more specifically to investigating the economic impact of the Marshall Plan on Europe, which I will attempt to do by analyzing a variety of economic measures found on Statista and CESSDA. Although not finalized, my research question will center around the study of various economic indicators (industrial production, agricultural production, distribution of aid and loans, and GDP growth) as they relate to the Marshall Plan, questioning to what extent did the plan improve Europe's economic outlook and truly serve as a model for reconstruction and development. Standard economic theory would suggest that given the massive influx of aid and capital that entered an already barren and deprived landscape in Europe, the Marshall Plan provided much needed stimulus to reinvigorate the economy, and the patterns in the data would confirm this upward trajectory of income (GDP) and production. If, however, the patterns in the data show that the early years following the implementation of the Marshall Plan saw relatively meager growth, it is more likely that economic improvements in future decades (60's, 70's), were more the result of factors other than the Marshall Plan. I will quantify the Marshall Plan through exact figures on foreign aid disbursements and loans given out between 1948-1952, with my outcome variables consisting of various economic indicators that combined can paint the overall macroeconomic standing of these European countries following the introduction of the Marshall Plan. Specifically, the datasets I have found include, among others, the OECD Employment and Labor Market Statistics from 1950 onwards, Post-WWII industrial (and agricultural) production in Western European countries between 1947 and 1951, and average annual GDP growth in European countries during the cold war (1950-1959).   
-
-## First Visualization (Milestone 3)
-```{r}
+## Figure 1: German Income in the Mid-20th Century
+```{r, echo = FALSE}
 library(readxl)
 library(dplyr)
 library(tidyverse)
 library(ggplot2)
 library(infer)
+library(knitr)
+library(kableExtra)
 ZA8155_16 <- read_excel("~/Desktop/Gov50Data/ZA8155_16.xls")
 
 real_inc <- as.numeric(as.character(ZA8155_16[["...3"]]))
 
-real_inc
-```
-```{r}
 german_inc <- ZA8155_16 |>
   summarize(`Reales Pro-Kopf-Einkommen in Europa und den USA (1870-1992)`, real_inc)|>
   slice(-(1:75)) |>
@@ -44,20 +39,12 @@ german_inc <- ZA8155_16 |>
    
 german_inc 
 ```
-
-
-## First Analysis (Milestone 4)
-
-```{r}
-#LOADING IN THE DATA OF US LOANS
+## Table 1: Change in US Loans (w/ Calculations)
+```{r, echo = FALSE}
 library(readxl)
 US_Loans <- read_excel("~/Desktop/Gov50Data/Gov50USLoans1946-1961.xlsx", 
     col_types = c("text", "numeric", "numeric", 
         "skip"))
-US_Loans
-```
-```{r}
-#CALCULATING THE PERCENTAGE CHANGE AND THE REAL CHANGE BETWEEN THE YEARS
 
 percentage_change <- ((US_Loans$"Marshall Plan period: 1949-52" - US_Loans$"Post-war relief period: 1946-1948") / US_Loans$"Post-war relief period: 1946-1948") * 100 
 
@@ -70,14 +57,12 @@ US_Loans <- US_Loans|>
 
 US_Loans_sorted <- US_Loans[order(US_Loans$"Real Change (in millions of US dollars)", decreasing = TRUE), ]
 
-US_Loans_sorted
-
-
 knitr::kable(US_Loans_sorted, digits = 2)
 
 ```
 
-```{r, fig.width=12, fig.height=5}
+## Figure 2: Change in US Loans
+```{r, fig.width = 12, echo = FALSE}
 
 real_change_graph <- US_Loans_sorted |>
   ggplot(aes(x = reorder(`U.S. overseas loans and grants to countries in Western Europe during various periods following the Second World War between 1946 and 1961 (in millions of U.S. dollars)`,
@@ -89,11 +74,107 @@ real_change_graph <- US_Loans_sorted |>
   labs(x ="Countries Receiving Loans from US", y = "Change in Loan Amount in Marshall Period (1949-52), compared to 1946-48 levels")
 
 real_change_graph
+```
+
+## Figure 3: Change in Agricultural Output
+```{r, echo = FALSE}
+
+Agdata <- read_excel("~/Desktop/Gov50Data/Gov50AgOutput1947-1951.xlsx", 
+col_types = c("text", "numeric", "numeric", 
+"numeric"))
+
+
+Ag_perc_change <- ((Agdata$`1950-1951` - Agdata$`1946-1947`) / Agdata$`1948-1949`)*100  
+
+Agdata <- Agdata |>
+  mutate(perc_change = Ag_perc_change)
+
+Agdata_sorted <- Agdata[order(Agdata$"perc_change", decreasing = TRUE), ]
+
+
+Agdata_graph <- Agdata_sorted|>
+  ggplot(aes(x = reorder(`Agricultural output in Western Europe 1947-1951`, - `perc_change`), y = `perc_change`, fill = `perc_change`)) + 
+  geom_bar(stat = "identity")+
+  coord_flip()+
+  labs(y = "Percentage Change in Agricultural Output from 1947-1951", x = "")+
+  scale_fill_continuous(name = "Percentage Change")
+
+Agdata_graph
+
+```
+
+## Figure 4: Change in Industrial Output
+```{r, echo = FALSE}
+Industrydata <- read_excel("~/Desktop/Gov50Data/Gov50IndustrialOutput1947-1951.xlsx", 
+col_types = c("text", "numeric", "numeric", 
+"numeric"))
+
+ind_perc_change <- ((Industrydata$`1951` - Industrydata$`1947`) / Industrydata$`1947`)*100  
+
+Industrydata <- Industrydata |>
+  mutate(perc_change = ind_perc_change)
+
+Industrydata_sorted <- Industrydata[order(Industrydata$"perc_change", decreasing = TRUE), ]
+
+Industry_graph <- Industrydata_sorted|>
+  ggplot(aes(x = reorder(`Industrial output in Western Europe 1947-1951`, - `perc_change`), y = `perc_change`, fill = `perc_change`)) + 
+  geom_bar(stat = "identity")+
+  coord_flip()+
+  labs(y = "Percentage Change in Industrial Output from 1947-1951", x = "")+
+  scale_fill_continuous(name = "Percentage Change")
+
+Industry_graph
+```
+
+## Regression Calculations
+```{r, echo = FALSE}
+
+common_countries <- intersect(intersect(US_Loans$`U.S. overseas loans and grants to countries in Western Europe during various periods following the Second World War between 1946 and 1961 (in millions of U.S. dollars)`, Industrydata$`Industrial output in Western Europe 1947-1951`), Agdata$`Agricultural output in Western Europe 1947-1951`)
+
+US_Loans_subset <- US_Loans[US_Loans$`U.S. overseas loans and grants to countries in Western Europe during various periods following the Second World War between 1946 and 1961 (in millions of U.S. dollars)` %in% common_countries, ]
+Industrydata_subset <- Industrydata[Industrydata$`Industrial output in Western Europe 1947-1951` %in% common_countries, ]
+Agdata_subset <- Agdata[Agdata$`Agricultural output in Western Europe 1947-1951` %in% common_countries, ]
+
+merged_data <- merge(US_Loans_subset, Industrydata_subset, by.x = "U.S. overseas loans and grants to countries in Western Europe during various periods following the Second World War between 1946 and 1961 (in millions of U.S. dollars)", by.y = "Industrial output in Western Europe 1947-1951")
+merged_data <- merge(merged_data, Agdata_subset, by.x = "U.S. overseas loans and grants to countries in Western Europe during various periods following the Second World War between 1946 and 1961 (in millions of U.S. dollars)", by.y = "Agricultural output in Western Europe 1947-1951")
+
+model_industrial <- lm(perc_change.x ~ `Real Change (in millions of US dollars)`, data = merged_data)
+model_agricultural <- lm(perc_change.y ~ `Real Change (in millions of US dollars)`, data = merged_data)
+
+
+summary_industrial <- summary(model_industrial)
+summary_agricultural <- summary(model_agricultural)
+
+table_industrial <- data.frame(
+  Coefficients = rownames(summary_industrial$coefficients),
+  Estimate = summary_industrial$coefficients[, "Estimate"],
+  `Std. Error` = summary_industrial$coefficients[, "Std. Error"],
+  `t value` = summary_industrial$coefficients[, "t value"],
+  `Pr(>|t|)` = summary_industrial$coefficients[, "Pr(>|t|)"]
+)
+
+table_agricultural <- data.frame(
+  Coefficients = rownames(summary_agricultural$coefficients),
+  Estimate = summary_agricultural$coefficients[, "Estimate"],
+  `Std. Error` = summary_agricultural$coefficients[, "Std. Error"],
+  `t value` = summary_agricultural$coefficients[, "t value"],
+  `Pr(>|t|)` = summary_agricultural$coefficients[, "Pr(>|t|)"]
+)
+
+kable(table_industrial, "html", align = "c") |>
+  kable_styling(full_width = FALSE)
+
+kable(table_agricultural, "html", align = "c") |>
+  kable_styling(full_width = FALSE)
 
 ```
 
 
-```{r}
+
+## Initial Observations
+Comparing the data available, there are some rather intuitive conclusions that can be drawn. When looking at the income levels per capita in Germany, their steady rise during the Marshall Plan period (the values between the two red lines) is commensurate with the relatively large amounts of loan payments Germany is receiving from the US during that same period. Without doing complicated statistical analyses or complex calculations, we can intuitively see how significant aid to Germany is correlated with income per capita rising. Moreover, to support this observation it is also worth noting that other country's aid plays a role in German income too. Since other countries trade with each other, the amount of aid they receive should also factor in when determining conclusions. When performing brief calculations:
+
+```{r, echo = FALSE}
 avg_perc_finite <- mean(percentage_change[is.finite(percentage_change)])
 avg_perc_finite
 
@@ -101,7 +182,7 @@ avg_real_finite <- mean(real_change[is.finite(real_change)])
 avg_real_finite
 ```
 
-Comparing the data available, there are some rather intuitive conclusions that can be drawn. When looking at the income levels per capita in Germany, their steady rise during the Marshall Plan period (the values between the two red lines) is commensurate with the relatively large amounts of loan payments Germany is receiving from the US during that same period. Without doing complicated statistical analyses or complex calculations, we can intuitively see how significant aid to Germany is correlated with income per capita rising. Moreover, to support this observation it is also worth noting that other country's aid plays a role in German income too. Since other countries trade with each other, the amount of aid they receive should also factor in when determining conclusions. When performing brief calculations, we see that on average, European countries got approximately 6517.16% more in aid and loans from the US during the Marshall Plan (as compared to immediately following WW2). This figure excludes certain countries that received no aid at all before the Marshall Plan and therefore had a mathematically infinite percentage increase in aid. To put it more tangibly, on average, European countries during the Marshall Plan received approximately $738.92 million US dollars (this figure is somewhat more representative than the average percentage change as it includes more countries). These staggering figures, when put into perspective with the rising income levels in Germany, support the conclusion that the Marshall Plan had a demonstrable impact on the German economy. 
+we see that on average, European countries got approximately 6517.16% more in aid and loans from the US during the Marshall Plan (as compared to immediately following WW2). This figure excludes certain countries that received no aid at all before the Marshall Plan and therefore had a mathematically infinite percentage increase in aid. To put it more tangibly, on average, European countries during the Marshall Plan received approximately $738.92 million US dollars (this figure is somewhat more representative than the average percentage change as it includes more countries). These staggering figures, when put into perspective with the rising income levels in Germany, support the conclusion that the Marshall Plan had a demonstrable impact on the German economy. 
 
 Despite these brief calculations, it would be somewhat disingenuous and statistically un-rigorous to end the conversation there, because crucially, the counter-factual is difficult to disprove. With the null hypothesis suggesting that the Marshall Plan yielded no significant improvements on the European economy, the data presented hitherto does not exactly disprove that. Although we might intuitively think that without such a huge influx of aid, income would not rise, we have not yet statistically proven that, and therefore need to conduct more tests. In the following section I will explore changes in the levels of industrial and agricultural output for various European countries during the Marshall Plan years, and see whether the countries that received the most aid (as seen in the second graph) were also the ones that saw biggest improvements in their agricultural and industrial output. These further tests will strengthen the statistical validity of any conclusions from this paper, and genuinely explore whether the Marshall Plan significantly improved the European economy. 
 
@@ -121,17 +202,49 @@ Despite these brief calculations, it would be somewhat disingenuous and statisti
 #2d. rather we see countries that were most hit that recuperated the most (ie Austria) 
 #2e. WHICH LEADS TO THE CONCLUSION, aid doesn't have to be overwhelming to be effective. It just has to be tactically placed where it makes sense. Clearly pouring hundreds of millions of dollars into (xyz country with small changes) yields little results, but when even small amounts were given to countries like austria (who needed it most) it was most effective
 #2f. suggests that US aid is most effective when its strategic and targeted, and can actually be affordable. 
+ 
+OUTLINE:
+
+1. Section 1: Introduction
+    * brief intro 
+    * your research question, I'm assessing the impact of the Marshall Plan on Europe's economy do determine how effective foreign aid is
+    * how you collect your data, where your data is coming from, and brief roadmap of what you will do
+    * also include hypothesis (and null hypothesis)
+    * ultimately your argument that aid works best when its targeted and much of the aid from the Marshall Plan actually wasn't the most effective
+    
+2. Section 2: Visualization of the data
+    * Income per capita in Germany
+    * Data of US Loan payments
+    * Percentage Change and Real Change table
+    * Change in loans graphs
+    * Industrial and Ag Changes 
+    * Correlation between countries with highest change and US loan amount (USE REGRESSION !!!!!)
+    * Misc. Calculations 
+    
+3. Section 3: Intuitive Answers
+    * (paragraph already written) analyzing the first couple of visualizations, also include that the Mutual Security Act of 1951 replaced the Marshall Plan in 1952 so the continued         GDP increase stems from that 
+
+4. Section 4: Rigorous Answers
+    * Looking at Industrial and Ag changes over Marshall Plan period is helpful
+    * If the hypothesis holds true then the countries with a higher percentage of aid should experience the biggest changes
+    * But when we look at the data and compare, we don't actually see that happening. 
+    * Rather we see countries that were most hit that recuperated the most (ie Austria)
+    * Which leads to the CONCLUSION: aid doesn't have to be overwhelming to be effective. It just has to be tactically placed where it makes sense
+          * Clearly pouring hundreds of millions of dollars into (xyz country with small changes) yields little results, but when even small amounts were given to countries like                   Austria (who needed it most) it was most effective
+          * Suggests that US aid is most effective when it is strategic and targeted, and it can actually be an affordable endeavor
+
+5. Section 5: Limitations on Experiment
+    * While there was a lot of data, it was all sort of disjointed given the historical nature of it, had to use data from many different sources that had different methods of               measuring and writing down the data
+    * Could have performed more advanced calculations on larger datasets to make a more statistically rigorous conclusion
+    * The data itself isn't very intuitive and understanding it requires a lot of historical knowledge (ie why Austria has most improvements)
+    * An interesting limitation that I have wrestled with was using real change in US loans rather than percentage change in US loans
+        * while it would probably have been fairer to judge according to percentage change (since 500 million goes much further in Norway than it does in France), I had to resort to             real change because there was more data available there and it didn't discount the infinity countries (that went from no aid to some aid, thus definitionally having an                 infinite percentge increase). 
+        * Also when briefly glancing over the data we see similar trends anyway, the countries with the most percentage change in aid (ie denmark, sweden, netherlands) are all quite             low on industrial output changes
+    * Ultimately the regressions show that this data is extremely statistically insignificant and points to the difficulty of assessing a genuine regression between such large               variables 
 
 
+# R Code {data-nav="collapsed"}
+```{r, eval=FALSE}
+knitr::purl("index.Rmd", "output_script.R")
+cat(readLines("output_script.R"), sep = "\n")
 ```
-
-
-
-
-
-
-
-
-
-
-
