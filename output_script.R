@@ -1,4 +1,4 @@
-## ---- echo = FALSE--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ---- echo = FALSE-------------------------------------------------------------------------------------------------------------------------------------------------------------
 library(readxl)
 library(dplyr)
 library(tidyverse)
@@ -24,7 +24,7 @@ german_inc <- ZA8155_16 |>
 german_inc 
 
 
-## ---- echo = FALSE--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ---- echo = FALSE-------------------------------------------------------------------------------------------------------------------------------------------------------------
 library(readxl)
 US_Loans <- read_excel("~/Desktop/Gov50Data/Gov50USLoans1946-1961.xlsx", 
     col_types = c("text", "numeric", "numeric", 
@@ -45,7 +45,7 @@ knitr::kable(US_Loans_sorted, digits = 2)
 
 
 
-## ---- fig.width = 12, echo = FALSE----------------------------------------------------------------------------------------------------------------------------------------------------
+## ---- fig.width = 12, echo = FALSE---------------------------------------------------------------------------------------------------------------------------------------------
 
 real_change_graph <- US_Loans_sorted |>
   ggplot(aes(x = reorder(`U.S. overseas loans and grants to countries in Western Europe during various periods following the Second World War between 1946 and 1961 (in millions of U.S. dollars)`,
@@ -59,7 +59,7 @@ real_change_graph <- US_Loans_sorted |>
 real_change_graph
 
 
-## ---- echo = FALSE--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ---- echo = FALSE-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Agdata <- read_excel("~/Desktop/Gov50Data/Gov50AgOutput1947-1951.xlsx", 
 col_types = c("text", "numeric", "numeric", 
@@ -73,7 +73,6 @@ Agdata <- Agdata |>
 
 Agdata_sorted <- Agdata[order(Agdata$"perc_change", decreasing = TRUE), ]
 
-
 Agdata_graph <- Agdata_sorted|>
   ggplot(aes(x = reorder(`Agricultural output in Western Europe 1947-1951`, - `perc_change`), y = `perc_change`, fill = `perc_change`)) + 
   geom_bar(stat = "identity")+
@@ -85,7 +84,7 @@ Agdata_graph
 
 
 
-## ---- echo = FALSE--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ---- echo = FALSE-------------------------------------------------------------------------------------------------------------------------------------------------------------
 Industrydata <- read_excel("~/Desktop/Gov50Data/Gov50IndustrialOutput1947-1951.xlsx", 
 col_types = c("text", "numeric", "numeric", 
 "numeric"))
@@ -97,6 +96,7 @@ Industrydata <- Industrydata |>
 
 Industrydata_sorted <- Industrydata[order(Industrydata$"perc_change", decreasing = TRUE), ]
 
+
 Industry_graph <- Industrydata_sorted|>
   ggplot(aes(x = reorder(`Industrial output in Western Europe 1947-1951`, - `perc_change`), y = `perc_change`, fill = `perc_change`)) + 
   geom_bar(stat = "identity")+
@@ -107,7 +107,7 @@ Industry_graph <- Industrydata_sorted|>
 Industry_graph
 
 
-## ---- echo = FALSE--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ---- echo = FALSE-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 common_countries <- intersect(intersect(US_Loans$`U.S. overseas loans and grants to countries in Western Europe during various periods following the Second World War between 1946 and 1961 (in millions of U.S. dollars)`, Industrydata$`Industrial output in Western Europe 1947-1951`), Agdata$`Agricultural output in Western Europe 1947-1951`)
 
@@ -125,6 +125,7 @@ model_agricultural <- lm(perc_change.y ~ `Real Change (in millions of US dollars
 summary_industrial <- summary(model_industrial)
 summary_agricultural <- summary(model_agricultural)
 
+
 table_industrial <- data.frame(
   Coefficients = rownames(summary_industrial$coefficients),
   Estimate = summary_industrial$coefficients[, "Estimate"],
@@ -141,6 +142,7 @@ table_agricultural <- data.frame(
   `Pr(>|t|)` = summary_agricultural$coefficients[, "Pr(>|t|)"]
 )
 
+
 kable(table_industrial, "html", align = "c") |>
   kable_styling(full_width = FALSE)
 
@@ -149,7 +151,7 @@ kable(table_agricultural, "html", align = "c") |>
 
 
 
-## ---- echo = FALSE--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 avg_perc_finite <- mean(percentage_change[is.finite(percentage_change)])
 avg_perc_finite
 
@@ -157,7 +159,7 @@ avg_real_finite <- mean(real_change[is.finite(real_change)])
 avg_real_finite
 
 
-## ---- eval=FALSE----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ---- eval=FALSE---------------------------------------------------------------------------------------------------------------------------------------------------------------
 ## knitr::purl("index.Rmd", "output_script.R")
 ## cat(readLines("output_script.R"), sep = "\n")
 
